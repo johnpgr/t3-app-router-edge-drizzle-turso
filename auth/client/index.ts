@@ -39,6 +39,7 @@ export async function signIn<
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     const signInUrl = `/api/auth/${
         isCredentials ? "callback" : "signin"
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     }/${providerId}`
 
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -50,7 +51,6 @@ export async function signIn<
     const csrfTokenResponse = await fetch("/api/auth/csrf")
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const { csrfToken } = await csrfTokenResponse.json()
-
     const res = await fetch(_signInUrl, {
         method: "post",
         headers: {
@@ -68,9 +68,7 @@ export async function signIn<
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const data = await res.clone().json()
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-    const error = new URL(data.url).searchParams.get("error")
-    if (redirect || !isSupportingReturn || !error) {
+    if (redirect || !isSupportingReturn) {
         // TODO: Do not redirect for Credentials and Email providers by default in next major
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         window.location.href = data.url ?? data.redirect ?? callbackUrl

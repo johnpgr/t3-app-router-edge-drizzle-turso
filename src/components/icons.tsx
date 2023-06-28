@@ -1,36 +1,7 @@
-"use client"
-
-import {
-    ChevronLeft,
-    ChevronRight,
-    Loader2,
-    LogOut,
-    User,
-    X,
-    type Icon as LucideIcon,
-    type LucideProps,
-} from "lucide-react"
+import { type LucideProps } from "lucide-react"
 import { type FC } from "react"
 
-export type Icon = LucideIcon
-
-const Logo: FC<LucideProps> = (props) => (
-    <div className="text-[hsl(280,100%,70%)]">
-        <svg
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            {...props}
-        >
-            <circle cx="12" cy="12" r="10"></circle>
-        </svg>
-    </div>
-)
-
-const GithubIcon: FC<LucideProps> = (props: LucideProps) => (
+export const GithubIcon: FC<LucideProps> = (props: LucideProps) => (
     <svg viewBox="0 0 438.549 438.549" {...props}>
         <path
             fill="currentColor"
@@ -39,7 +10,7 @@ const GithubIcon: FC<LucideProps> = (props: LucideProps) => (
     </svg>
 )
 
-const GoogleIcon: FC<LucideProps> = (props: LucideProps) => (
+export const GoogleIcon: FC<LucideProps> = (props: LucideProps) => (
     <svg viewBox="0 0 210 210" {...props}>
         <path
             fill="currentColor"
@@ -50,14 +21,3 @@ const GoogleIcon: FC<LucideProps> = (props: LucideProps) => (
     </svg>
 )
 
-export {
-    Loader2 as SpinnerIcon,
-    X as CloseIcon,
-    GithubIcon,
-    GoogleIcon,
-    Logo as LogoIcon,
-    ChevronLeft as ChevronLeftIcon,
-    ChevronRight as ChevronRightIcon,
-    LogOut as LogOutIcon,
-    User as UserIcon,
-}

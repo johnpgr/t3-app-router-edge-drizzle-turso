@@ -3,7 +3,7 @@ import {
     HASH_KEY_LENGTH,
     HASH_ALGORITHM,
     HASH_ITERATIONS,
-} from '~/config/constants'
+} from "~/config/constants"
 
 /**
  * This functions are defined here, because I didn't find any hashing library that works on Vercel's edge runtime
@@ -12,24 +12,23 @@ export const hashUtils = {
     generateSalt() {
         const saltBytes = new Uint8Array(SALT_LENGTH)
         crypto.getRandomValues(saltBytes)
-        return Array.from(saltBytes, (byte) =>
-            ('0' + byte.toString(16)).slice(-2),
-        ).join('')
+        const salt = Buffer.from(saltBytes).toString("base64")
+        return salt
     },
 
     async hashPassword(password: string) {
         const salt = this.generateSalt()
-        const saltBuffer = Buffer.from(salt, 'hex')
+        const saltBuffer = Buffer.from(salt, "base64")
         const derivedKey = await crypto.subtle.importKey(
-            'raw',
+            "raw",
             new TextEncoder().encode(password),
-            { name: 'PBKDF2' },
+            { name: "PBKDF2" },
             false,
-            ['deriveBits'],
+            ["deriveBits"],
         )
         const hashedKey = await crypto.subtle.deriveBits(
             {
-                name: 'PBKDF2',
+                name: "PBKDF2",
                 salt: saltBuffer,
                 iterations: HASH_ITERATIONS,
                 hash: HASH_ALGORITHM,
@@ -37,28 +36,24 @@ export const hashUtils = {
             derivedKey,
             HASH_KEY_LENGTH * 8,
         )
-        const hashedPassword = Array.from(new Uint8Array(hashedKey))
-            .map((byte) => ('0' + byte.toString(16)).slice(-2))
-            .join('')
-        return { salt, hashedPassword }
+        const hashedPassword = Buffer.from(hashedKey).toString("base64")
+        const combinedHash = `${salt}$${hashedPassword}`
+        return combinedHash
     },
 
-    async comparePasswords(
-        password: string,
-        hashedPassword: string,
-        salt: string,
-    ) {
-        const saltBuffer = Buffer.from(salt, 'hex')
+    async comparePasswords(password: string, combinedHash: string) {
+        const [salt, hashedPassword] = combinedHash.split("$")
+        const saltBuffer = Buffer.from(salt as string, "base64")
         const derivedKey = await crypto.subtle.importKey(
-            'raw',
+            "raw",
             new TextEncoder().encode(password),
-            { name: 'PBKDF2' },
+            { name: "PBKDF2" },
             false,
-            ['deriveBits'],
+            ["deriveBits"],
         )
         const hashedKey = await crypto.subtle.deriveBits(
             {
-                name: 'PBKDF2',
+                name: "PBKDF2",
                 salt: saltBuffer,
                 iterations: HASH_ITERATIONS,
                 hash: HASH_ALGORITHM,
@@ -66,9 +61,8 @@ export const hashUtils = {
             derivedKey,
             HASH_KEY_LENGTH * 8,
         )
-        const hashedPasswordToCompare = Array.from(new Uint8Array(hashedKey))
-            .map((byte) => ('0' + byte.toString(16)).slice(-2))
-            .join('')
+        const hashedPasswordToCompare =
+            Buffer.from(hashedKey).toString("base64")
         return hashedPassword === hashedPasswordToCompare
-    }
+    },
 }

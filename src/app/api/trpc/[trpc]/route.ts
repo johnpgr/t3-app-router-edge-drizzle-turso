@@ -1,8 +1,8 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch"
 import { cookies } from "next/headers"
 import type { NextRequest } from "next/server"
-import { createContext } from "~/server/context"
-import { appRouter } from "~/server/routers/_app"
+import { createContext } from "@/server/context"
+import { appRouter } from "@/server/routers/_app"
 import { createGetUser } from "~/shared/server-rsc/get-user"
 
 export const runtime = "edge"

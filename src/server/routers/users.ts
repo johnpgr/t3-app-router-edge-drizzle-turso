@@ -1,47 +1,130 @@
-import { z } from "zod";
-import { publicProcedure, router } from "../trpc";
-import { db } from "~/db/drizzle-db";
-import { hashUtils } from "~/utils/hash"
+import { z } from "zod"
+import { publicProcedure, privateProcedure, router } from "../trpc"
+import { db } from "~/drizzle"
+import { createUlid } from "~/src/utils/ulid"
+import { users } from "~/drizzle/schema"
+import { hashUtils } from "~/auth/hash-utils"
+import { updateUserInputSchema } from "~/src/utils/schemas"
+import { eq } from "drizzle-orm"
+import { TRPCError } from "@trpc/server"
 
 export const usersRouter = router({
-    validateCredentials: publicProcedure.input(z.object({
-        email: z.string(),
-        password: z.string(),
-    })).query(async ({ input }) => {
-        const user = await db.query.users.findFirst({
-            columns: {},
-            with: {
-                password: {
+    get: publicProcedure
+        .input(
+            z.object({
+                email: z.string().optional(),
+                id: z.string().optional(),
+            }),
+        )
+        .query(async ({ input }) => {
+            const { email, id } = input
+            if (!email && !id)
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "email or id is required",
+                })
+
+            if(email){
+                const user = await db.query.users.findFirst({
+                    where: (user, { eq }) => eq(user.email, email),
                     columns: {
-                        salt: true, hashedPassword: true,
-                    }
-                }
-            },
-            where: (user, { eq }) => eq(user.email, input.email)
-        })
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true,
+                    },
+                })
+                return user
+            }
+            
+            if(id){
+                const user = await db.query.users.findFirst({
+                    where: (user, { eq }) => eq(user.id, id),
+                    columns: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true,
+                    },
+                })
+                return user
+            }
+        }),
 
-        if (!user || !user.password) return false 
+    create: publicProcedure
+        .input(
+            z.object({
+                email: z.string(),
+                password: z.string(),
+                username: z.string(),
+                image: z.string().optional(),
+            }),
+        )
+        .mutation(async ({ input }) => {
+            const { email, password, username, image } = input
 
-        const { salt, hashedPassword } = user.password
+            const foundEmail = await db.query.users.findFirst({
+                where: (user, { eq }) => eq(user.email, email),
+                columns: {
+                    email: true,
+                },
+            })
 
-        const isValidPassword = await hashUtils.comparePasswords(input.password, hashedPassword, salt)
+            if (foundEmail) throw new Error("Email already in use")
 
-        return isValidPassword
-    }),
+            const foundUsername = await db.query.users.findFirst({
+                where: (user, { eq }) => eq(user.name, username),
+                columns: {
+                    name: true,
+                },
+            })
 
-    getByEmail: publicProcedure.input(z.object({
-        email: z.string(),
-    })).query(async ({ input }) => {
-        const user = await db.query.users.findFirst({
-            columns: {
-                id: true,
-                email: true,
-                name: true,
-                image: true,
-            },
-            where: (user, { eq }) => eq(user.email, input.email)
-        })
+            if (foundUsername) throw new Error("Username already in use")
 
-        return user
-    })
+            const createdUser = await db
+                .insert(users)
+                .values({
+                    id: createUlid(),
+                    email,
+                    hashedPassword: await hashUtils.hashPassword(password),
+                    image,
+                    name: username,
+                })
+                .returning({
+                    id: users.id,
+                    name: users.name,
+                    email: users.email,
+                    image: users.image,
+                })
+                .get()
+
+            return createdUser
+        }),
+
+    update: privateProcedure
+        .input(updateUserInputSchema)
+        .mutation(async ({ input, ctx }) => {
+            const { username, email, password, image } = input
+
+            const updatedUser = await db
+                .update(users)
+                .set({
+                    email,
+                    name: username,
+                    hashedPassword: password
+                        ? await hashUtils.hashPassword(password)
+                        : null,
+                    image: image ?? null,
+                })
+                .where(eq(users.id, ctx.user.id))
+                .returning({
+                    id: users.id,
+                    name: users.name,
+                    email: users.email,
+                    image: users.image,
+                })
+                .get()
+
+            return updatedUser
+        }),
 })

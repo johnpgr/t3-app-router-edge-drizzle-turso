@@ -5,7 +5,8 @@ import { httpBatchLink, loggerLink } from "@trpc/client"
 import { createTRPCReact } from "@trpc/react-query"
 import { useState } from "react"
 import superjson from "superjson"
-import type { AppRouter } from "~/server/routers/_app"
+import type { AppRouter } from "@/server/routers/_app"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
 export const api = createTRPCReact<AppRouter>()
 
@@ -62,7 +63,7 @@ export function ClientProvider(props: { children: React.ReactNode }) {
             <QueryClientProvider client={queryClient}>
                 {props.children}
                 {/* This causes "Warning: validateDOMNesting(...): <aside> cannot appear as a child of <html> in the browser console during development, so we comment it out for now */}
-                {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+                <ReactQueryDevtools initialIsOpen={true} />
             </QueryClientProvider>
         </api.Provider>
     )

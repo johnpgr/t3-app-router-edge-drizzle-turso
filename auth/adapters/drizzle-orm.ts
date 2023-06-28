@@ -1,15 +1,21 @@
 import type { Adapter, VerificationToken } from "@auth/core/adapters"
 import { and, eq } from "drizzle-orm"
-import { type DrizzleDb } from "~/db/drizzle-db"
-import { accounts, sessions, users, verificationTokens } from "~/db/schema"
-import { createUlid } from "~/utils/ulid"
+import { type DrizzleDb } from "~/drizzle"
+import { accounts, sessions, users, verificationTokens } from "~/drizzle/schema"
+import { createUlid } from "@/utils/ulid"
 
 export function createDrizzleAdapter(database: DrizzleDb): Adapter {
     return {
         createUser: async (data) => {
             return database
                 .insert(users)
-                .values({ ...data, id: createUlid() })
+                .values({
+                    ...data,
+                    id: createUlid(),
+                    name:
+                        data.name ??
+                        `Unknown${Math.random().toString(36).slice(2, 7)}`,
+                })
                 .returning()
                 .get()
         },
@@ -47,7 +53,10 @@ export function createDrizzleAdapter(database: DrizzleDb): Adapter {
         updateUser: async (user) => {
             return database
                 .update(users)
-                .set(user)
+                .set({
+                    ...user,
+                    name: user.name as string,
+                })
                 .where(eq(users.id, user.id as string))
                 .returning()
                 .get()

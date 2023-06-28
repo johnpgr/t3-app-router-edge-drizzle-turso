@@ -8,24 +8,8 @@ export const users = sqliteTable("users", {
     email: text("email").notNull(),
     emailVerified: integer("emailVerified", { mode: "timestamp_ms" }),
     image: text("image"),
-    passwordId: text("password_id"),
+    hashedPassword: text("hashedPassword"),
 })
-
-export const passwords = sqliteTable("passwords", {
-    id: text("id").notNull().primaryKey(),
-    userId: text("userId")
-        .notNull()
-        .references(() => users.id, { onDelete: "cascade" }),
-    hashedPassword: text("hashedPassword").notNull(),
-    salt: text("salt").notNull(),
-})
-
-export const passwordToUser = relations(users, ({one})=>({
-    password: one(passwords, {
-        fields: [users.passwordId],
-        references: [passwords.id],
-    })
-}))
 
 export const accounts = sqliteTable(
     "accounts",
@@ -49,6 +33,10 @@ export const accounts = sqliteTable(
     }),
 )
 
+export const userToAccounts = relations(users, ({ many }) => ({
+    accounts: many(accounts),
+}))
+
 export const sessions = sqliteTable("sessions", {
     sessionToken: text("sessionToken").notNull().primaryKey(),
     userId: text("userId")
@@ -56,6 +44,10 @@ export const sessions = sqliteTable("sessions", {
         .references(() => users.id, { onDelete: "cascade" }),
     expires: integer("expires", { mode: "timestamp_ms" }).notNull(),
 })
+
+export const sessionsToUser = relations(users,({many})=>({
+    sessions: many(sessions)
+}))
 
 export const verificationTokens = sqliteTable(
     "verificationToken",

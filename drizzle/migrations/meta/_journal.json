@@ -8,6 +8,27 @@
       "when": 1687890934379,
       "tag": "0000_flawless_scourge",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1687899538586,
+      "tag": "0001_friendly_starfox",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1687899559364,
+      "tag": "0002_misty_tinkerer",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1687899774816,
+      "tag": "0003_exotic_living_tribunal",
+      "breakpoints": true
     }
   ]
 }
