@@ -6,10 +6,10 @@ import { useMemo } from "react"
 
 export function createHydrateClient(opts: { transformer?: DataTransformer }) {
     return function HydrateClient(props: {
-        children: React.ReactNode
+        // children: React.ReactNode
         state: DehydratedState
     }) {
-        const { state, children } = props
+        const { state } = props
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const transformedState: DehydratedState = useMemo(() => {
@@ -19,6 +19,6 @@ export function createHydrateClient(opts: { transformer?: DataTransformer }) {
             }
             return state
         }, [state])
-        return <Hydrate state={transformedState}>{children}</Hydrate>
+        return <Hydrate state={transformedState} />
     }
 }

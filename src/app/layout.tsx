@@ -32,6 +32,7 @@ export default async function RootLayout(props: PropsWithChildren) {
         // suppressHydrationWarning is required to avoid a console warning during development when using next-themes https://github.com/pacocoursey/next-themes#with-app
         <html lang="en" suppressHydrationWarning>
             <ClientProvider>
+                <HydrateClient state={dehydratedState} />
                 <body
                     className={cn(
                         "min-h-screen font-sans text-slate-900 antialiased dark:text-slate-50",
@@ -42,9 +43,7 @@ export default async function RootLayout(props: PropsWithChildren) {
                         <div className="flex min-h-screen flex-col">
                             <header className="container flex justify-end px-8 py-4">
                                 {user ? (
-                                    <HydrateClient state={dehydratedState}>
-                                        <UserButtons />
-                                    </HydrateClient>
+                                    <UserButtons />
                                 ) : (
                                     <Button asChild variant={"link"}>
                                         <Link

@@ -9,7 +9,7 @@ const migrationsClient = createClient({
     authToken: process.env.DB_TOKEN,
 })
 
-export const db = drizzle(migrationsClient, {
+const db = drizzle(migrationsClient, {
     schema
 })
 
