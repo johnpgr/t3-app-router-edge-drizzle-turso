@@ -4,7 +4,7 @@ import { db } from "~/drizzle"
 import { ulid } from "~/src/utils/ulid"
 import { privateProcedure, publicProcedure, router } from "../trpc"
 import { createPost } from "../use-cases/posts/create-post"
-import { lt } from "drizzle-orm"
+import { lt, lte } from "drizzle-orm"
 
 export const postsRouter = router({
     list: publicProcedure
@@ -37,7 +37,7 @@ export const postsRouter = router({
                 },
                 limit: limit + 1,
                 where: cursor ? ({ id }) => lt(id, cursor) : undefined,
-                orderBy: ({createdAt}, {desc}) => desc(createdAt) 
+                orderBy: ({ createdAt }, { desc }) => desc(createdAt),
             })
 
             let nextCursor: typeof cursor | undefined = undefined

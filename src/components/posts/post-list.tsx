@@ -2,7 +2,7 @@
 
 import { api } from "~/trpc/client/trpc-client"
 import { PostRow } from "./post-row"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { Spinner } from "../spinner"
 import { useInView } from "react-intersection-observer"
 
@@ -15,27 +15,30 @@ export const PostList = () => {
                 getNextPageParam: (lastPage) => lastPage.nextCursor,
             },
         )
+    const fetchNextPageRef = useRef(fetchNextPage)
+    fetchNextPageRef.current = fetchNextPage
+
     useEffect(() => {
         if (inView && hasNextPage && !isFetchingNextPage) {
-            void fetchNextPage()
+            void fetchNextPageRef.current()
         }
-    }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
+    }, [inView, hasNextPage, isFetchingNextPage])
     return (
         <>
             <ul className="space-y-4">
-                {data?.pages.map((page) => (
-                    page.posts.map((post) =>
+                {data?.pages.map((page) =>
+                    page.posts.map((post) => (
                         <PostRow key={post.slug} post={post} />
-                    )
-                ))}
-            </ul>
-            <div ref={ref}>
-                {isFetchingNextPage && (
-                    <div className="flex w-full items-center justify-center p-8">
-                        <Spinner size={32} />
-                    </div>
+                    )),
                 )}
-            </div>
+            </ul>
+            {isFetchingNextPage ? (
+                <div className="flex w-full items-center justify-center p-8">
+                    <Spinner size={32} />
+                </div>
+            ) : (
+                <div ref={ref} className="h-1 w-full bg-transparent" />
+            )}
         </>
     )
 }
