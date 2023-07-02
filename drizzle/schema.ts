@@ -35,6 +35,7 @@ export const users = sqliteTable("users", {
     hashedPassword: text("hashed_password"),
 })
 
+
 export const postsToUser = relations(users, ({ many }) => ({
     posts: many(posts),
 }))
@@ -60,6 +61,13 @@ export const accounts = sqliteTable(
         compositePk: primaryKey(account.provider, account.providerAccountId),
     }),
 )
+
+export const accountsToUser = relations(accounts, ({ one }) => ({
+    user: one(users, {
+        fields: [accounts.userId],
+        references: [users.id],
+    }),
+}))
 
 export const userToAccounts = relations(users, ({ many }) => ({
     accounts: many(accounts),

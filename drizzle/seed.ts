@@ -10,11 +10,11 @@ import {
     createUser,
     type TCreateUser,
 } from "~/src/server/use-cases/users/create-user"
-import { createUlid } from "~/src/utils/ulid"
+import { ulid } from "~/src/utils/ulid"
 
 async function seedPosts(n: number) {
     const user: TCreateUser = {
-        id: createUlid(),
+        id: ulid(),
         email: faker.internet.email(),
         name: faker.internet.userName(),
         image: faker.internet.avatar(),
@@ -27,7 +27,7 @@ async function seedPosts(n: number) {
         const title = faker.lorem.sentence()
 
         const post: TCreatePost = {
-            id: createUlid(),
+            id: ulid(),
             title,
             body: faker.lorem.paragraphs(),
             slug: slugify(title, { lower: true }),

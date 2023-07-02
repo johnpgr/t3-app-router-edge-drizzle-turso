@@ -1,7 +1,7 @@
 import { type InferModel } from "drizzle-orm"
 import { db } from "~/drizzle"
 import { users } from "~/drizzle/schema"
-import { createUlid } from "~/src/utils/ulid"
+import { ulid } from "~/src/utils/ulid"
 
 export type TCreateUser = InferModel<typeof users, "insert">
 
@@ -27,7 +27,7 @@ export async function createUser(user: TCreateUser) {
     const createdUser = await db
         .insert(users)
         .values({
-            id: createUlid(),
+            id: ulid(),
             email: user.email,
             hashedPassword: user.hashedPassword,
             image: user.image,

@@ -1,5 +1,5 @@
 import { ulidFactory } from "ulid-workers"
 
-export const createUlid = ulidFactory({
+export const ulid = ulidFactory({
     monotonic: true,
 })
