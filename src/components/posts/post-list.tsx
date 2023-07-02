@@ -1,10 +1,10 @@
 "use client"
 
-import { api } from "~/trpc/client/trpc-client"
-import { PostRow } from "./post-row"
-import { useEffect, useRef } from "react"
-import { Spinner } from "../spinner"
+import { useEffect } from "react"
 import { useInView } from "react-intersection-observer"
+import { api } from "~/trpc/client/trpc-client"
+import { Spinner } from "../spinner"
+import { PostRow } from "./post-row"
 
 export const PostList = () => {
     const { ref, inView } = useInView()
@@ -15,12 +15,10 @@ export const PostList = () => {
                 getNextPageParam: (lastPage) => lastPage.nextCursor,
             },
         )
-    const fetchNextPageRef = useRef(fetchNextPage)
-    fetchNextPageRef.current = fetchNextPage
 
     useEffect(() => {
         if (inView && hasNextPage && !isFetchingNextPage) {
-            void fetchNextPageRef.current()
+            void fetchNextPage()
         }
     }, [inView, hasNextPage, isFetchingNextPage])
     return (
