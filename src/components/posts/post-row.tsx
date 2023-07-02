@@ -1,18 +1,18 @@
-import { type Outputs } from "~/shared/utils"
+import type { Outputs } from "~/shared/utils"
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import Link from "next/link"
-import { Button } from "./ui/button"
+import { Button } from "../ui/button"
 import { formatDistanceToNow } from "date-fns"
 
 export type Post = Outputs["posts"]["list"][number]
 
-const PostRow = (props: { post: Post }) => {
+export const PostRow = (props: { post: Post }) => {
     const { post } = props
 
     return (
@@ -58,16 +58,5 @@ const PostRow = (props: { post: Post }) => {
                 </AccordionItem>
             </Accordion>
         </li>
-    )
-}
-
-export const PostList = (props: { posts: Post[] }) => {
-    const { posts } = props
-    return (
-        <ul className="space-y-4">
-            {posts.map((post) => (
-                <PostRow key={post.slug} post={post} />
-            ))}
-        </ul>
     )
 }

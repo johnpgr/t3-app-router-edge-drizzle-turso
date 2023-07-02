@@ -1,19 +1,23 @@
 import slugify from "slugify"
 import { z } from "zod"
 import { db } from "~/drizzle"
-import { createUlid } from "~/src/utils/ulid"
+import { ulid } from "~/src/utils/ulid"
 import { privateProcedure, publicProcedure, router } from "../trpc"
 import { createPost } from "../use-cases/posts/create-post"
+import { lt } from "drizzle-orm"
 
 export const postsRouter = router({
     list: publicProcedure
         .input(
             z.object({
-                limit: z.number().default(10),
-                offset: z.number().default(0),
+                limit: z.number().min(1).max(100).nullish(),
+                cursor: z.string().nullish(),
             }),
         )
         .query(async ({ input }) => {
+            const { cursor } = input
+            const limit = input.limit ?? 20
+
             const posts = await db.query.posts.findMany({
                 with: {
                     author: {
@@ -24,20 +28,28 @@ export const postsRouter = router({
                     },
                 },
                 columns: {
+                    id: true,
                     title: true,
                     description: true,
                     slug: true,
                     createdAt: true,
                     updatedAt: true,
                 },
-                limit: input.limit,
-                offset: input.offset,
-                orderBy({ createdAt }, { desc }) {
-                    return desc(createdAt)
-                },
+                limit: limit + 1,
+                where: cursor ? ({ id }) => lt(id, cursor) : undefined,
+                orderBy: ({createdAt}, {desc}) => desc(createdAt) 
             })
-            return posts
+
+            let nextCursor: typeof cursor | undefined = undefined
+
+            if (posts.length > limit) {
+                const nextPost = posts.pop()
+                nextCursor = nextPost?.id
+            }
+
+            return { posts, nextCursor }
         }),
+
     create: privateProcedure
         .input(
             z.object({
@@ -49,7 +61,7 @@ export const postsRouter = router({
         .mutation(async ({ ctx, input }) => {
             const { user } = ctx
             return await createPost({
-                id: createUlid(),
+                id: ulid(),
                 slug: slugify(input.title, { lower: true }),
                 title: input.title,
                 description: input.description,

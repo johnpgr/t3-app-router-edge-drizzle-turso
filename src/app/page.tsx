@@ -1,5 +1,6 @@
 import { rsc } from "~/shared/server-rsc/trpc"
-import { PostList } from "../components/post-list"
+import { PostList } from "../components/posts/post-list"
+import { HydrateClient } from "~/trpc/client/hydrate-client"
 
 export const runtime = "edge"
 export const revalidate = 0
@@ -9,10 +10,12 @@ export const metadata = {
 }
 
 export default async function HomePage() {
-    const posts = await rsc.posts.list.fetch({})
+    await rsc.posts.list.fetchInfinite({ limit: 10 })
+    const state = await rsc.dehydrate()
     return (
         <div className="container px-8">
-            <PostList posts={posts} />
+            <HydrateClient state={state} />
+            <PostList />
         </div>
     )
 }

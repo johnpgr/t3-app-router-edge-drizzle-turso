@@ -20,4 +20,3 @@ export const GoogleIcon: FC<LucideProps> = (props: LucideProps) => (
         />
     </svg>
 )
-

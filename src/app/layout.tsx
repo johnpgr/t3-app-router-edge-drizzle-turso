@@ -10,6 +10,7 @@ import { Button } from "../components/ui/button"
 import { rsc } from "~/shared/server-rsc/trpc"
 import UserButtons from "../components/user-buttons"
 import { HydrateClient } from "~/trpc/client/hydrate-client"
+import { ThemeSwitch } from "../components/theme-switch"
 
 const fontSans = FontSans({
     subsets: ["latin"],
@@ -54,6 +55,8 @@ export default async function RootLayout(props: PropsWithChildren) {
                                         </Link>
                                     </Button>
                                 )}
+
+                                <ThemeSwitch />
                             </header>
                             <main className="flex-1">{props.children}</main>
                         </div>

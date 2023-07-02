@@ -6,7 +6,7 @@ export const Spinner = (props: { className?: string; size?: number }) => {
     return (
         <Loader2
             size={props.size ?? 16}
-            className={cn("text-primary animate-spin", props.className)}
+            className={cn("animate-spin text-primary", props.className)}
         />
     )
 }

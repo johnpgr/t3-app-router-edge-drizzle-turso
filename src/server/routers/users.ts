@@ -7,7 +7,7 @@ import { updateUserInputSchema } from "~/src/utils/schemas"
 import { eq } from "drizzle-orm"
 import { TRPCError } from "@trpc/server"
 import { createUser } from "../use-cases/users/create-user"
-import { createUlid } from "~/src/utils/ulid"
+import { ulid } from "~/src/utils/ulid"
 
 export const usersRouter = router({
     get: publicProcedure
@@ -63,7 +63,7 @@ export const usersRouter = router({
         )
         .mutation(async ({ input }) => {
             return await createUser({
-                id: createUlid(),
+                id: ulid(),
                 email: input.email,
                 name: input.username,
                 image: input.image,
