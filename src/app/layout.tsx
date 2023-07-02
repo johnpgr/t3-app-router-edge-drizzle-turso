@@ -32,17 +32,19 @@ export default async function RootLayout(props: PropsWithChildren) {
     return (
         // suppressHydrationWarning is required to avoid a console warning during development when using next-themes https://github.com/pacocoursey/next-themes#with-app
         <html lang="en" suppressHydrationWarning>
-            <ClientProvider>
-                <HydrateClient state={dehydratedState} />
-                <body
-                    className={cn(
-                        "min-h-screen font-sans text-slate-900 antialiased dark:text-slate-50",
-                        fontSans.variable,
-                    )}
-                >
+            <body
+                className={cn(
+                    "min-h-screen font-sans text-neutral-800 antialiased dark:text-neutral-100",
+                    fontSans.variable,
+                )}>
+                <ClientProvider>
+                    <HydrateClient state={dehydratedState} />
                     <ThemeProvider attribute="class" enableSystem>
                         <div className="flex min-h-screen flex-col">
                             <header className="container flex justify-end px-8 py-4">
+                                <Button className="p-0 mr-auto text-2xl font-bold text-neutral-600 dark:text-neutral-400" variant={"link"} asChild>
+                                    <Link href="/">Acme</Link>
+                                </Button>
                                 {user ? (
                                     <UserButtons />
                                 ) : (
@@ -55,14 +57,13 @@ export default async function RootLayout(props: PropsWithChildren) {
                                         </Link>
                                     </Button>
                                 )}
-
                                 <ThemeSwitch />
                             </header>
                             <main className="flex-1">{props.children}</main>
                         </div>
                     </ThemeProvider>
-                </body>
-            </ClientProvider>
-        </html>
+                </ClientProvider>
+            </body>
+        </html >
     )
 }

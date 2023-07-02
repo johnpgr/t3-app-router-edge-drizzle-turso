@@ -10,7 +10,7 @@ import Link from "next/link"
 import { Button } from "../ui/button"
 import { formatDistanceToNow } from "date-fns"
 
-export type Post = Outputs["posts"]["list"][number]
+export type Post = Outputs["posts"]["list"]["posts"][number]
 
 export const PostRow = (props: { post: Post }) => {
     const { post } = props
@@ -22,7 +22,7 @@ export const PostRow = (props: { post: Post }) => {
                     <AccordionTrigger>
                         <div>
                             <Link
-                                href={`/profile/${post.author.name}`}
+                                href={`/profile/${post.author.name ?? ""}`}
                                 className="flex items-center gap-2"
                             >
                                 <Avatar className="h-8 w-8">
@@ -30,7 +30,7 @@ export const PostRow = (props: { post: Post }) => {
                                         src={post.author.image ?? undefined}
                                     />
                                     <AvatarFallback>
-                                        {post.author.name.substring(0, 2)}
+                                        {post.author.name?.substring(0, 2)}
                                     </AvatarFallback>
                                 </Avatar>
                                 <span>{post.author.name}</span>

@@ -1,20 +1,18 @@
 "use client"
-import { useRouter, useSearchParams } from "next/navigation"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { Input } from "@/components/ui/input"
-import { loginInputSchema, type TLoginInput } from "~/src/utils/schemas"
-import { Spinner } from "~/src/components/spinner"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Dot, Github } from "lucide-react"
+import Link from "next/link"
+import { useSearchParams } from "next/navigation"
+import { useForm } from "react-hook-form"
 import { signIn } from "~/auth/client"
-import { Github } from "lucide-react"
-import { Dot } from "lucide-react"
+import { Spinner } from "~/src/components/spinner"
+import { loginInputSchema, type TLoginInput } from "~/src/utils/schemas"
 
 export const runtime = "edge"
 
 export default function LoginPage() {
-    const router = useRouter()
     const authError = useSearchParams().get("error")
     const {
         handleSubmit,
@@ -27,13 +25,10 @@ export default function LoginPage() {
 
     async function onSubmit(data: TLoginInput) {
         await signIn("credentials", {
-            redirect: false,
+            callbackUrl: "/",
             email: data.email,
             password: data.password,
         })
-        //Refresh here is for the root layout to update the session
-        router.refresh()
-        router.push("/")
     }
 
     return (
@@ -86,10 +81,9 @@ export default function LoginPage() {
                 </span>
                 <Button
                     className="gap-1"
-                    // eslint-disable-next-line @typescript-eslint/no-misused-promises
                     onClick={() =>
-                        signIn("github", {
-                            redirect: false,
+                        void signIn("github", {
+                            callbackUrl: "/",
                         })
                     }
                     type="button"
@@ -108,12 +102,11 @@ const authErrors = {
     OAuthCreateAccount: "Try signing with a different account.",
     EmailCreateAccount: "Try signing with a different account.",
     Callback: "Try signing with a different account.",
+    CallbackRouteError: "Try signing with a different account.",
     OAuthAccountNotLinked:
         "To confirm your identity, sign in with the same account you used originally.",
     EmailSignin: "Check your email address.",
     CredentialsSignin:
         "Sign in failed. Check the details you provided are correct.",
     default: "Unable to sign in.",
-    CallbackRouteError:
-        "Another account already exists with the same e-mail address.",
 } as const

@@ -20,7 +20,7 @@ async function seedPosts(n: number) {
         image: faker.internet.avatar(),
         hashedPassword: await hashUtils.hashPassword(faker.internet.password()),
     }
-    
+
     const author = await createUser(user)
 
     for (let i = 0; i < n; i++) {

@@ -10,7 +10,7 @@ const migrationsClient = createClient({
 })
 
 const db = drizzle(migrationsClient, {
-    schema
+    schema,
 })
 
 console.log("Running migrations...")

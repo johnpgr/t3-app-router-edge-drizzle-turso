@@ -10,8 +10,6 @@ export const authConfig: SolidAuthConfig = {
     // Configure one or more authentication providers
     adapter: createDrizzleAdapter(db),
     providers: [
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore growing pains
         GithubProvider({
             clientId: env.GITHUB_ID,
             clientSecret: env.GITHUB_SECRET,
@@ -35,7 +33,6 @@ export const authConfig: SolidAuthConfig = {
                 },
                 password: { label: "Password", type: "password" },
             },
-            //@ts-expect-error idk
             async authorize(credentials) {
                 if (!credentials) throw new Error("Missing credentials")
 
@@ -49,8 +46,9 @@ export const authConfig: SolidAuthConfig = {
                 const user = await rsc.users.get.fetch({
                     email: credentials.email as string,
                 })
-                
-                return user
+
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- we know it's not null
+                return user!
             },
         }),
     ],

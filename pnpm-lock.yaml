@@ -76,9 +76,6 @@ dependencies:
   '@tailwindcss/line-clamp':
     specifier: ^0.4.4
     version: 0.4.4(tailwindcss@3.3.2)
-  '@tailwindcss/typography':
-    specifier: ^0.5.9
-    version: 0.5.9(tailwindcss@3.3.2)
   '@tanstack/query-core':
     specifier: 4.29.19
     version: 4.29.19
@@ -127,6 +124,9 @@ dependencies:
   lucide-react:
     specifier: ^0.256.0
     version: 0.256.0(react@18.2.0)
+  markdown-to-jsx:
+    specifier: ^7.2.1
+    version: 7.2.1(react@18.2.0)
   next:
     specifier: ^13.4.7
     version: 13.4.7(react-dom@18.2.0)(react@18.2.0)
@@ -171,6 +171,9 @@ devDependencies:
   '@faker-js/faker':
     specifier: ^8.0.2
     version: 8.0.2
+  '@tailwindcss/typography':
+    specifier: ^0.5.9
+    version: 0.5.9(tailwindcss@3.3.2)
   '@types/cookie':
     specifier: ^0.5.1
     version: 0.5.1
@@ -1853,7 +1856,7 @@ packages:
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
       tailwindcss: 3.3.2
-    dev: false
+    dev: true
 
   /@tanstack/match-sorter-utils@8.8.4:
     resolution: {integrity: sha512-rKH8LjZiszWEvmi01NR72QWZ8m4xmXre0OOwlRGnjU01Eqz/QnN+cqpty2PJ0efHblq09+KilvyR7lsbzmXVEw==}
@@ -3824,14 +3827,15 @@ packages:
 
   /lodash.castarray@4.4.0:
     resolution: {integrity: sha512-aVx8ztPv7/2ULbArGJ2Y42bG1mEQ5mGjpdvrbJcJFU3TbYybe+QlLS4pst9zV52ymy2in1KpFPiZnAOATxD4+Q==}
-    dev: false
+    dev: true
 
   /lodash.isplainobject@4.0.6:
     resolution: {integrity: sha512-oSXzaWypCMHkPC3NvBEaPHf0KsA5mvPrOPgQWDsbg8n7orZ290M0BmC/jgRZ4vcJ6DTAhjrsSYgdsW/F+MFOBA==}
-    dev: false
+    dev: true
 
   /lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+    dev: true
 
   /lodash.throttle@4.1.1:
     resolution: {integrity: sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==}
@@ -3859,6 +3863,15 @@ packages:
     resolution: {integrity: sha512-uqw4MijZS29zePSBtkEIdOAp2Mn2mE6lVgFxaUd/MpclVUOuwacpRF67s1y3ErEIcR9aSBO0F1e6G56Ci8VUKA==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
+
+  /markdown-to-jsx@7.2.1(react@18.2.0):
+    resolution: {integrity: sha512-9HrdzBAo0+sFz9ZYAGT5fB8ilzTW+q6lPocRxrIesMO+aB40V9MgFfbfMXxlGjf22OpRy+IXlvVaQenicdpgbg==}
+    engines: {node: '>= 10'}
+    peerDependencies:
+      react: '>= 0.14.0'
     dependencies:
       react: 18.2.0
     dev: false
@@ -4291,7 +4304,7 @@ packages:
     dependencies:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
-    dev: false
+    dev: true
 
   /postcss-selector-parser@6.0.13:
     resolution: {integrity: sha512-EaV1Gl4mUEV4ddhDnv/xtj7sxwrwxdetHdWUGnT4VJQf+4d05v6lHYZr8N573k5Z0BViss7BDhfWtKS3+sfAqQ==}

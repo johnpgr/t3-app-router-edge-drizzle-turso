@@ -1,31 +1,25 @@
 import type { Adapter, VerificationToken } from "@auth/core/adapters"
 import { and, eq } from "drizzle-orm"
 import { type DrizzleDb } from "~/drizzle"
-import { accounts, users } from "~/drizzle/schema"
+import { accounts, sessions, users, verificationTokens } from "~/drizzle/schema"
 import { ulid } from "@/utils/ulid"
 
 export function createDrizzleAdapter(database: DrizzleDb): Adapter {
     return {
         createUser: async (data) => {
-            return database
+            return await database
                 .insert(users)
-                .values({
-                    ...data,
-                    id: ulid(),
-                    name:
-                        data.name ??
-                        `Unknown${Math.random().toString(36).slice(2, 7)}`,
-                })
+                .values({ ...data, id: ulid() })
                 .returning()
                 .get()
         },
-        getUser: async (id) => {
+        getUser: (id) => {
             return (
                 database.select().from(users).where(eq(users.id, id)).get() ??
                 null
             )
         },
-        getUserByEmail: async (email) => {
+        getUserByEmail: (email) => {
             return (
                 database
                     .select()
@@ -35,29 +29,44 @@ export function createDrizzleAdapter(database: DrizzleDb): Adapter {
             )
         },
         createSession: async (session) => {
-            throw new Error("Not implemented")
+            return await database
+                .insert(sessions)
+                .values(session)
+                .returning()
+                .get()
         },
         getSessionAndUser: async (sessionToken) => {
-            throw new Error("Not implemented")
+            return (
+                (await database
+                    .select({
+                        session: sessions,
+                        user: users,
+                    })
+                    .from(sessions)
+                    .where(eq(sessions.sessionToken, sessionToken))
+                    .innerJoin(users, eq(users.id, sessions.userId))
+                    .get()) ?? null
+            )
         },
         updateUser: async (user) => {
-            return database
+            return await database
                 .update(users)
-                .set({
-                    ...user,
-                    name: user.name as string,
-                })
-                .where(eq(users.id, user.id as string))
+                .set(user)
+                .where(eq(users.id, user.id))
                 .returning()
                 .get()
         },
         updateSession: async (session) => {
-            throw new Error("Not implemented")
+            return await database
+                .update(sessions)
+                .set(session)
+                .where(eq(sessions.sessionToken, session.sessionToken))
+                .returning()
+                .get()
         },
         linkAccount: async (rawAccount) => {
             const updatedAccount = await database
                 .insert(accounts)
-                // @ts-expect-error idk
                 .values(rawAccount)
                 .returning()
                 .get()
@@ -75,12 +84,13 @@ export function createDrizzleAdapter(database: DrizzleDb): Adapter {
 
             return account
         },
-        getUserByAccount: async (account) => {
+        getUserByAccount: (account) => {
             return (
                 database
                     .select({
                         id: users.id,
                         email: users.email,
+                        emailVerified: users.emailVerified,
                         image: users.image,
                         name: users.name,
                     })
@@ -98,16 +108,45 @@ export function createDrizzleAdapter(database: DrizzleDb): Adapter {
                     .get() ?? null
             )
         },
-        deleteSession: async (sessionToken) => {
-            throw new Error("Not implemented")
+        deleteSession: (sessionToken) => {
+            return (
+                database
+                    .delete(sessions)
+                    .where(eq(sessions.sessionToken, sessionToken))
+                    .returning()
+                    .get() ?? null
+            )
         },
-        createVerificationToken: async (verificationToken) => {
-            throw new Error("Not implemented")
+        createVerificationToken: (verificationToken) => {
+            return database
+                .insert(verificationTokens)
+                .values(verificationToken)
+                .returning()
+                .get()
         },
         useVerificationToken: async (verificationToken) => {
-            throw new Error("Not implemented")
+            try {
+                return (database
+                    .delete(verificationTokens)
+                    .where(
+                        and(
+                            eq(
+                                verificationTokens.identifier,
+                                verificationToken.identifier,
+                            ),
+                            eq(
+                                verificationTokens.token,
+                                verificationToken.token,
+                            ),
+                        ),
+                    )
+                    .returning()
+                    .get() ?? null) as Promise<VerificationToken | null>
+            } catch {
+                throw new Error("No verification token found.")
+            }
         },
-        deleteUser: async (id) => {
+        deleteUser: (id) => {
             return database
                 .delete(users)
                 .where(eq(users.id, id))
@@ -127,6 +166,8 @@ export function createDrizzleAdapter(database: DrizzleDb): Adapter {
                     ),
                 )
                 .run()
+
+            return undefined
         },
     }
 }

@@ -20,25 +20,14 @@ export const posts = sqliteTable("posts", {
         .defaultNow(),
 })
 
-export const userToPosts = relations(posts, ({ one }) => ({
-    author: one(users, {
-        fields: [posts.authorId],
-        references: [users.id],
-    }),
-}))
-
 export const users = sqliteTable("users", {
     id: text("id").notNull().primaryKey(),
-    name: text("name").notNull(),
+    name: text("name"),
     email: text("email").notNull(),
+    emailVerified: integer("email_verified", { mode: "timestamp_ms" }),
     image: text("image"),
     hashedPassword: text("hashed_password"),
 })
-
-
-export const postsToUser = relations(users, ({ many }) => ({
-    posts: many(posts),
-}))
 
 export const accounts = sqliteTable(
     "accounts",
@@ -61,6 +50,37 @@ export const accounts = sqliteTable(
         compositePk: primaryKey(account.provider, account.providerAccountId),
     }),
 )
+
+export const sessions = sqliteTable("sessions", {
+    sessionToken: text("session_token").notNull().primaryKey(),
+    userId: text("user_id")
+        .notNull()
+        .references(() => users.id, { onDelete: "cascade" }),
+    expires: integer("expires", { mode: "timestamp_ms" }).notNull(),
+})
+
+export const verificationTokens = sqliteTable(
+    "verification_tokens",
+    {
+        identifier: text("identifier").notNull(),
+        token: text("token").notNull(),
+        expires: integer("expires", { mode: "timestamp_ms" }).notNull(),
+    },
+    (vt) => ({
+        compositePk: primaryKey(vt.identifier, vt.token),
+    }),
+)
+
+export const userToPosts = relations(posts, ({ one }) => ({
+    author: one(users, {
+        fields: [posts.authorId],
+        references: [users.id],
+    }),
+}))
+
+export const postsToUser = relations(users, ({ many }) => ({
+    posts: many(posts),
+}))
 
 export const accountsToUser = relations(accounts, ({ one }) => ({
     user: one(users, {

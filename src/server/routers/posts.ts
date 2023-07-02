@@ -1,10 +1,10 @@
+import { lt } from "drizzle-orm"
 import slugify from "slugify"
 import { z } from "zod"
 import { db } from "~/drizzle"
 import { ulid } from "~/src/utils/ulid"
 import { privateProcedure, publicProcedure, router } from "../trpc"
 import { createPost } from "../use-cases/posts/create-post"
-import { lt, lte } from "drizzle-orm"
 
 export const postsRouter = router({
     list: publicProcedure
@@ -48,6 +48,31 @@ export const postsRouter = router({
             }
 
             return { posts, nextCursor }
+        }),
+
+    get: publicProcedure
+        .input(z.object({ slug: z.string() }))
+        .query(async ({ input }) => {
+            const { slug } = input
+            return await db.query.posts.findFirst({
+                where: (post, { eq }) => eq(post.slug, slug),
+                with: {
+                    author: {
+                        columns: {
+                            name: true,
+                            image: true,
+                        },
+                    },
+                },
+                columns: {
+                    slug: true,
+                    title: true,
+                    description: true,
+                    body: true,
+                    createdAt: true,
+                    updatedAt: true,
+                },
+            })
         }),
 
     create: privateProcedure

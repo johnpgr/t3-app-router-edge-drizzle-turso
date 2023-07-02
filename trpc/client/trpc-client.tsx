@@ -62,7 +62,6 @@ export function ClientProvider(props: { children: React.ReactNode }) {
         <api.Provider client={trpcClient} queryClient={queryClient}>
             <QueryClientProvider client={queryClient}>
                 {props.children}
-                {/* This causes "Warning: validateDOMNesting(...): <aside> cannot appear as a child of <html> in the browser console during development, so we comment it out for now */}
                 <ReactQueryDevtools initialIsOpen={true} />
             </QueryClientProvider>
         </api.Provider>

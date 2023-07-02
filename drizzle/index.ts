@@ -9,7 +9,7 @@ const client = createClient({
 })
 
 export const db = drizzle(client, {
-    schema
+    schema,
 })
 
 export type DrizzleDb = typeof db
