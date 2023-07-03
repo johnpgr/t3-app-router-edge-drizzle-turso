@@ -1,15 +1,14 @@
 import "./globals.css"
 
+import { ThemeProvider } from "@/components/theme-provider"
 import Link from "next/link"
 import { type PropsWithChildren } from "react"
-import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/components/ui/lib/utils"
-import { ClientProvider } from "~/trpc/client/trpc-client"
-import { Button } from "../components/ui/button"
 import { rsc } from "~/shared/server-rsc/trpc"
-import UserButtons from "../components/user-buttons"
 import { HydrateClient } from "~/trpc/client/hydrate-client"
+import { ClientProvider } from "~/trpc/client/trpc-client"
 import { ThemeSwitch } from "../components/theme-switch"
+import { Button } from "../components/ui/button"
+import UserButtons from "../components/user-buttons"
 
 export const metadata = {
     title: {

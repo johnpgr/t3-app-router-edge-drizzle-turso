@@ -20,7 +20,7 @@ export const PostList = () => {
         if (inView && hasNextPage && !isFetchingNextPage) {
             void fetchNextPage()
         }
-    }, [inView, hasNextPage, isFetchingNextPage])
+    }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
     return (
         <>
             <ul className="space-y-4 my-16 max-w-2xl mx-auto container">
