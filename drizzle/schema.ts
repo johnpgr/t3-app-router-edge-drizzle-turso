@@ -8,6 +8,7 @@ export const posts = sqliteTable("posts", {
     slug: text("slug").notNull(),
     description: text("description").notNull(),
     body: text("content").notNull(),
+    estimatedReadTime: integer("estimated_read_time").notNull(),
     authorId: text("author_id")
         .notNull()
         .references(() => users.id, { onDelete: "cascade" }),

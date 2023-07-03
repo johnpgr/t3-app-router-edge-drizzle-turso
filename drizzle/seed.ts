@@ -10,6 +10,7 @@ import {
     createUser,
     type TCreateUser,
 } from "~/src/server/use-cases/users/create-user"
+import { calculateReadingTime } from "~/src/utils/read-time"
 import { ulid } from "~/src/utils/ulid"
 
 async function seedPosts(n: number) {
@@ -25,13 +26,15 @@ async function seedPosts(n: number) {
 
     for (let i = 0; i < n; i++) {
         const title = faker.lorem.sentence()
+        const body = faker.lorem.paragraphs()
 
         const post: TCreatePost = {
             id: ulid(),
             title,
-            body: faker.lorem.paragraphs(),
+            body,
             slug: slugify(title, { lower: true }),
             description: faker.lorem.sentences(),
+            estimatedReadTime: calculateReadingTime(body),
             authorId: author.id,
         }
 

@@ -1,0 +1,1 @@
+ALTER TABLE posts ADD `estimated_read_time` integer NOT NULL;

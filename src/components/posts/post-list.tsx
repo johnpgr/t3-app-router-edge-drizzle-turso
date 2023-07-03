@@ -23,7 +23,7 @@ export const PostList = () => {
     }, [inView, hasNextPage, isFetchingNextPage])
     return (
         <>
-            <ul className="space-y-4">
+            <ul className="space-y-4 my-16 max-w-2xl mx-auto container">
                 {data?.pages.map((page) =>
                     page.posts.map((post) => (
                         <PostRow key={post.slug} post={post} />

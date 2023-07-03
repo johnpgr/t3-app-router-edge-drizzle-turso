@@ -5,6 +5,7 @@ import { db } from "~/drizzle"
 import { ulid } from "~/src/utils/ulid"
 import { privateProcedure, publicProcedure, router } from "../trpc"
 import { createPost } from "../use-cases/posts/create-post"
+import { calculateReadingTime } from "~/src/utils/read-time"
 
 export const postsRouter = router({
     list: publicProcedure
@@ -32,6 +33,7 @@ export const postsRouter = router({
                     title: true,
                     description: true,
                     slug: true,
+                    estimatedReadTime: true,
                     createdAt: true,
                     updatedAt: true,
                 },
@@ -69,6 +71,7 @@ export const postsRouter = router({
                     title: true,
                     description: true,
                     body: true,
+                    estimatedReadTime: true,
                     createdAt: true,
                     updatedAt: true,
                 },
@@ -91,6 +94,7 @@ export const postsRouter = router({
                 title: input.title,
                 description: input.description,
                 body: input.body,
+                estimatedReadTime: calculateReadingTime(input.body),
                 authorId: user.id,
             })
         }),
