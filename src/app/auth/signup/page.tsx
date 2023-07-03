@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Input } from "@/components/ui/input"
-import { type TRegisterInput, registerInputSchema } from "~/src/utils/schemas"
+import { type TRegisterUser, RegisterUserSchema } from "~/src/utils/schemas"
 import { api } from "~/trpc/client/trpc-client"
 import { Spinner } from "~/src/components/spinner"
 import { Dot } from "lucide-react"
@@ -17,9 +17,9 @@ export default function RegisterPage() {
         handleSubmit,
         register,
         formState: { errors },
-    } = useForm<TRegisterInput>({
+    } = useForm<TRegisterUser>({
         mode: "onBlur",
-        resolver: zodResolver(registerInputSchema),
+        resolver: zodResolver(RegisterUserSchema),
     })
 
     const {
@@ -28,7 +28,7 @@ export default function RegisterPage() {
         isLoading,
     } = api.users.create.useMutation()
 
-    async function onSubmit(data: TRegisterInput) {
+    async function onSubmit(data: TRegisterUser) {
         await createUser(data)
 
         //Refresh here is for the root layout to update the session

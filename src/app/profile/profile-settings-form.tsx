@@ -8,8 +8,8 @@ import { Dot } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import {
-    updateUserInputSchema,
-    type TUpdateUserInput,
+    UpdateUserSchema,
+    type TUpdateUser,
 } from "~/src/utils/schemas"
 import { api } from "~/trpc/client/trpc-client"
 
@@ -20,14 +20,14 @@ export const ProfileSettingsForm = () => {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
-    } = useForm<TUpdateUserInput>({
-        resolver: zodResolver(updateUserInputSchema),
+    } = useForm<TUpdateUser>({
+        resolver: zodResolver(UpdateUserSchema),
         mode: "onSubmit",
     })
 
     const { mutateAsync: updateUser, error } = api.users.update.useMutation()
 
-    async function onSubmit(data: TUpdateUserInput) {
+    async function onSubmit(data: TUpdateUser) {
         // remove empty strings from data
         for (const val in data) {
             //@ts-expect-error ignore

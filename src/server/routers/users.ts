@@ -3,7 +3,7 @@ import { publicProcedure, privateProcedure, router } from "../trpc"
 import { db } from "~/drizzle"
 import { users } from "~/drizzle/schema"
 import { hashUtils } from "~/auth/hash-utils"
-import { updateUserInputSchema } from "~/src/utils/schemas"
+import { UpdateUserSchema } from "~/src/utils/schemas"
 import { eq } from "drizzle-orm"
 import { TRPCError } from "@trpc/server"
 import { createUser } from "../use-cases/users/create-user"
@@ -72,7 +72,7 @@ export const usersRouter = router({
         }),
 
     update: privateProcedure
-        .input(updateUserInputSchema)
+        .input(UpdateUserSchema)
         .mutation(async ({ input, ctx }) => {
             const { username, email, password, image } = input
 

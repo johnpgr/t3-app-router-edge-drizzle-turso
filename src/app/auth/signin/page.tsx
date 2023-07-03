@@ -8,7 +8,7 @@ import { useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { signIn } from "~/auth/client"
 import { Spinner } from "~/src/components/spinner"
-import { loginInputSchema, type TLoginInput } from "~/src/utils/schemas"
+import { LoginUserSchema, type TLoginUser } from "~/src/utils/schemas"
 
 export const runtime = "edge"
 
@@ -18,12 +18,12 @@ export default function LoginPage() {
         handleSubmit,
         register,
         formState: { errors, isSubmitting },
-    } = useForm<TLoginInput>({
+    } = useForm<TLoginUser>({
         mode: "onBlur",
-        resolver: zodResolver(loginInputSchema),
+        resolver: zodResolver(LoginUserSchema),
     })
 
-    async function onSubmit(data: TLoginInput) {
+    async function onSubmit(data: TLoginUser) {
         await signIn("credentials", {
             callbackUrl: "/",
             email: data.email,
