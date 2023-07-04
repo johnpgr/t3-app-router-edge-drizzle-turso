@@ -1,9 +1,9 @@
 import type { Outputs } from "~/shared/utils"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import Link from "next/link"
-import { Button } from "../ui/button"
 import { format } from "date-fns"
 import { Card, CardContent } from "../ui/card"
+import { LinkButton } from "../ui/link-button"
 
 export type Post = Outputs["posts"]["list"]["posts"][number]
 
@@ -13,9 +13,9 @@ export const PostRow = (props: { post: Post }) => {
     return (
         <li>
             <Card>
-                <CardContent className="p-4 flex flex-col">
+                <CardContent className="flex flex-col p-4">
                     <div className="flex flex-col items-center">
-                        <div className="flex flex-col w-full">
+                        <div className="flex w-full flex-col">
                             <div className="flex gap-2">
                                 <Link
                                     href={`/profile/${post.author.name ?? ""}`}
@@ -31,18 +31,13 @@ export const PostRow = (props: { post: Post }) => {
                                     </Avatar>
                                 </Link>
                                 <div className="flex flex-col">
-                                    <Button
-                                        variant="link"
-                                        asChild
-                                        className="h-fit p-0 text-sm text-neutral-600 dark:text-neutral-400"
+                                    <LinkButton
+                                        className="h-fit text-sm text-neutral-600 dark:text-neutral-400"
+                                        href={`/profile/${post.author.name ?? ""
+                                            }`}
                                     >
-                                        <Link
-                                            href={`/profile/${post.author.name ?? ""
-                                                }`}
-                                        >
-                                            {post.author.name ?? ""}
-                                        </Link>
-                                    </Button>
+                                        {post.author.name ?? ""}
+                                    </LinkButton>
                                     <time
                                         dateTime={post.createdAt.toISOString()}
                                         title={format(
@@ -57,18 +52,14 @@ export const PostRow = (props: { post: Post }) => {
                             </div>
                         </div>
                         <div className="w-full px-8 py-2">
-                            <Button
-                                variant={"link"}
-                                asChild
-                                className="h-fit p-0 text-2xl font-bold"
-                            >
-                                <Link href={`/post/${post.slug}`}>
-                                    {post.title}
-                                </Link>
-                            </Button>
+                            <LinkButton
+                                className="h-fit text-2xl font-bold"
+                                href={`/post/${post.slug}`}>
+                                {post.title}
+                            </LinkButton>
                         </div>
                     </div>
-                    <span className="text-xs text-neutral-500 ml-auto">
+                    <span className="ml-auto text-xs text-neutral-500">
                         {post.estimatedReadTime} min read
                     </span>
                 </CardContent>

@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
-import { rsc } from "~/shared/server-rsc/trpc";
-import { PostForm } from "~/src/components/posts/post-form";
+import { redirect } from "next/navigation"
+import { PostForm } from "~/src/components/posts/post-form"
+import { useServerSession } from "@/utils/session/server"
 
 export const runtime = "edge"
 export const revalidate = 0
@@ -9,7 +9,7 @@ export const metadata = {
 }
 
 export default async function NewPostPage() {
-    const user = await rsc.whoami.fetch()
+    const user = await useServerSession()
     if (!user) redirect("/auth/signin")
 
     return <PostForm />

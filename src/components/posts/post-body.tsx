@@ -1,17 +1,33 @@
-import { type Outputs } from "~/shared/utils"
 import Markdown from "markdown-to-jsx"
-import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar"
+import { type Outputs } from "~/shared/utils"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import { Card, CardContent } from "../ui/card"
 import { Button } from "../ui/button"
 import Link from "next/link"
-import { Card, CardContent } from "../ui/card"
+import { Pencil } from "lucide-react"
+import { LinkButton } from "../ui/link-button"
+import { DeletePostButton } from "./delete-post-button"
+import { useServerSession } from "~/src/utils/session/server"
 
 type Post = Outputs["posts"]["get"]
 
-export const PostBody = (props: { post: NonNullable<Post> }) => {
+export const PostBody = async (props: { post: NonNullable<Post> }) => {
+    const user = await useServerSession()
+
     return (
-        <Card className="container mx-auto max-w-5xl py-8 my-8">
+        <Card className="container mx-auto my-8 max-w-5xl py-8">
             <CardContent>
-                <div className="mx-auto flex flex-col items-center">
+                <div className="relative mx-auto flex flex-col items-center">
+                    {user?.id === props.post.author.id && (
+                        <div className="absolute right-0 top-0 flex gap-2">
+                            <Button variant={"secondary"} size={"sm"} asChild>
+                                <Link href={`/posts/edit/${props.post.slug}`} >
+                                    <Pencil size={16} />
+                                </Link>
+                            </Button>
+                            <DeletePostButton slug={props.post.slug} />
+                        </div>
+                    )}
                     <Avatar className="h-20 w-20">
                         <AvatarImage
                             src={props.post.author.image ?? ""}
@@ -21,23 +37,20 @@ export const PostBody = (props: { post: NonNullable<Post> }) => {
                             {props.post.author.name?.slice(0, 2).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
-                    <Button
-                        variant={"link"}
-                        className="p-0 text-lg text-neutral-600 dark:text-neutral-400"
-                        asChild
+                    <LinkButton
+                        href={`/profile/${props.post.author.name ?? ""}`}
+                        className="text-lg text-neutral-600 dark:text-neutral-400"
                     >
-                        <Link href={`/profile/${props.post.author.name ?? ""}`}>
-                            {props.post.author.name}
-                        </Link>
-                    </Button>
+                        {props.post.author.name}
+                    </LinkButton>
                 </div>
                 <h1 className="mb-4 text-center text-5xl font-bold">
                     {props.post.title}
                 </h1>
-                <h2 className="text-center mb-2 text-lg font-semibold text-neutral-600 dark:text-neutral-400">
+                <h2 className="mb-2 text-center text-lg font-semibold text-neutral-600 dark:text-neutral-400">
                     {props.post.description}
                 </h2>
-                <h3 className="text-xs text-neutral-500 text-center mb-8">
+                <h3 className="mb-8 text-center text-xs text-neutral-500">
                     {props.post.estimatedReadTime} min read
                 </h3>
                 <article className="prose max-w-none dark:prose-invert lg:prose-xl">

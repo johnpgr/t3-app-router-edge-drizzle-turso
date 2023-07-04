@@ -3,7 +3,6 @@ import clsx from "clsx"
 import { ChevronDown, LogOut, User } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
-import { api } from "~/trpc/client/trpc-client"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import {
     DropdownMenu,
@@ -14,9 +13,10 @@ import {
     DropdownMenuTrigger,
 } from "./ui/dropdown-menu"
 import { signOut } from "~/auth/client"
+import { useSession } from "@/utils/session/client"
 
 export default function UserButtons() {
-    const { data: user } = api.whoami.useQuery()
+    const { session: user } = useSession()
     const [isOpen, setIsOpen] = useState(false)
     return (
         <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>

@@ -11,14 +11,10 @@ import { unstable_cache } from "next/cache"
 export async function cache<T>(
     key: string | string[],
     callback: () => Promise<T>,
-    options?: {
-        revalidate?: number | false
-        tags?: string[]
-    },
 ): Promise<T> {
     return await unstable_cache(
         callback,
         Array.isArray(key) ? key : [key],
-        options,
+        { tags: Array.isArray(key) ? key : [key] },
     )()
 }

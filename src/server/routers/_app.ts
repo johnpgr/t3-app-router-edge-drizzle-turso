@@ -7,7 +7,7 @@ import { postsRouter } from "./posts"
 import { usersRouter } from "./users"
 
 export const appRouter = router({
-    whoami: publicProcedure.query(({ ctx }) => {
+    session: publicProcedure.query(({ ctx }) => {
         return ctx.user ?? null
     }),
     users: usersRouter,

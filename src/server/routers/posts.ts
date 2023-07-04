@@ -1,4 +1,4 @@
-import { lt } from "drizzle-orm"
+import { eq, lt } from "drizzle-orm"
 import slugify from "slugify"
 import { z } from "zod"
 import { db } from "~/drizzle"
@@ -6,6 +6,10 @@ import { ulid } from "~/src/utils/ulid"
 import { privateProcedure, publicProcedure, router } from "../trpc"
 import { createPost } from "../use-cases/posts/create-post"
 import { calculateReadingTime } from "~/src/utils/read-time"
+import { updatePost } from "../use-cases/posts/update-post"
+import { TRPCError } from "@trpc/server"
+import { posts } from "~/drizzle/schema"
+import { revalidateTag } from "next/cache"
 
 export const postsRouter = router({
     list: publicProcedure
@@ -61,6 +65,7 @@ export const postsRouter = router({
                 with: {
                     author: {
                         columns: {
+                            id:true,
                             name: true,
                             image: true,
                         },
@@ -97,5 +102,89 @@ export const postsRouter = router({
                 estimatedReadTime: calculateReadingTime(input.body),
                 authorId: user.id,
             })
+        }),
+
+    update: privateProcedure
+        .input(
+            z.object({
+                slug: z.string(),
+                title: z.string(),
+                description: z.string(),
+                body: z.string(),
+            }),
+        )
+        .mutation(async ({ ctx, input }) => {
+            const { slug, title, description, body } = input
+
+            const existingPost = await db.query.posts.findFirst({
+                where: (post, { eq }) => eq(post.slug, slug),
+                columns: {},
+                with: {
+                    author: {
+                        columns: { id: true },
+                    },
+                },
+            })
+
+            if (!existingPost) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Post not found",
+                })
+            }
+
+            if (existingPost.author.id !== ctx.user.id) {
+                throw new TRPCError({
+                    code: "FORBIDDEN",
+                    message: "You do not have permission to edit this post",
+                })
+            }
+
+            await updatePost(slug, {
+                title,
+                slug: slugify(title, { lower: true }),
+                description,
+                body,
+                estimatedReadTime: calculateReadingTime(input.body),
+            })
+
+            revalidateTag(slug)
+        }),
+
+    delete: privateProcedure
+        .input(z.object({ slug: z.string() }))
+        .mutation(async ({ ctx, input }) => {
+            const { slug } = input
+
+            const existingPost = await db.query.posts.findFirst({
+                where: (post, { eq }) => eq(post.slug, slug),
+                columns: {},
+                with: {
+                    author: {
+                        columns: { id: true },
+                    },
+                },
+            })
+
+            if (!existingPost) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Post not found",
+                })
+            }
+
+            if (existingPost.author.id !== ctx.user.id) {
+                throw new TRPCError({
+                    code: "FORBIDDEN",
+                    message: "You do not have permission to delete this post",
+                })
+            }
+
+            await db
+                .delete(posts)
+                .where(eq(posts.slug, slug))
+                .run()
+
+            revalidateTag(slug)
         }),
 })
