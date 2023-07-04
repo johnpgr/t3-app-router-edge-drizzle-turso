@@ -1,8 +1,8 @@
 import { type Metadata } from "next"
 import { notFound } from "next/navigation"
 import { rsc } from "~/shared/server-rsc/trpc"
-import { PostBody } from "~/src/components/posts/post-body"
-import { cache } from "~/src/utils/cache"
+import { PostBody } from "@/components/posts/post-body"
+import { cache } from "@/utils/cache"
 
 export const runtime = "edge"
 

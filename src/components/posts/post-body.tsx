@@ -8,6 +8,7 @@ import { Pencil } from "lucide-react"
 import { LinkButton } from "../ui/link-button"
 import { DeletePostButton } from "./delete-post-button"
 import { useServerSession } from "~/src/utils/session/server"
+import { PreBlock } from "../syntax-highlighter"
 
 type Post = Outputs["posts"]["get"]
 
@@ -21,7 +22,7 @@ export const PostBody = async (props: { post: NonNullable<Post> }) => {
                     {user?.id === props.post.author.id && (
                         <div className="absolute right-0 top-0 flex gap-2">
                             <Button variant={"secondary"} size={"sm"} asChild>
-                                <Link href={`/posts/edit/${props.post.slug}`} >
+                                <Link href={`/posts/edit/${props.post.slug}`}>
                                     <Pencil size={16} />
                                 </Link>
                             </Button>
@@ -54,7 +55,16 @@ export const PostBody = async (props: { post: NonNullable<Post> }) => {
                     {props.post.estimatedReadTime} min read
                 </h3>
                 <article className="prose max-w-none dark:prose-invert lg:prose-xl">
-                    <Markdown>{props.post.body}</Markdown>
+                    <Markdown
+                        options={{
+                            disableParsingRawHTML: true,
+                            overrides: {
+                                pre: PreBlock
+                            },
+                        }}
+                    >
+                        {props.post.body}
+                    </Markdown>
                 </article>
             </CardContent>
         </Card>
